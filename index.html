@@ -11,8 +11,9 @@
       --bg:#070202;
       --red:#ff1a1a;
       --red-dim:#a20000;
-      --card-w:4.5cm; /* requested physical size */
-      --card-h:8.5cm; /* requested physical size */
+      --card-w:5.5cm; /* updated */
+      --card-h:8.5cm; /* updated */
+      --ui-scale:1.5; /* render ~1.5x on screen without warping */ /* requested physical size */
       --glow:0 0 12px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
     }
     html,body{height:100%;}
@@ -38,7 +39,7 @@
     .btn:active{transform:translateY(1px);} 
     .btn[disabled]{opacity:.6; cursor:not-allowed;}
 
-    .stage{position:relative; width:var(--card-w); height:var(--card-h); margin:22px auto 10px;}
+    .stage{position:relative; width:var(--card-w); height:var(--card-h); margin:22px auto 10px; transform:scale(var(--ui-scale)); transform-origin: top center;}
     .glow{position:absolute; inset:-14px; border-radius:22px; box-shadow:0 0 40px rgba(255,0,0,.35), inset 0 0 30px rgba(255,0,0,.06);} 
 
     /* 3D card */
@@ -101,7 +102,20 @@
     };
     // Signed placeholders — replace each value with your signed image URL later
     const SIGNED = {
-      FRANZ: "", KAZSH:"", NAVI:"", INHU:"", DAMI:"", JOSHUA:"", ISHMI: ""
+      // FRANZ SIGNED – paste final URL below
+      FRANZ: "",
+      // KAZSH SIGNED – paste final URL below
+      KAZSH: "",
+      // NAVI SIGNED – paste final URL below
+      NAVI: "",
+      // INHU SIGNED – paste final URL below
+      INHU: "",
+      // DAMI SIGNED – paste final URL below
+      DAMI: "",
+      // JOSHUA SIGNED – paste final URL below
+      JOSHUA: "",
+      // ISHMI SIGNED – paste final URL below
+      ISHMI: ""
     };
 
     /* ---------------- Helpers ---------------- */
@@ -151,8 +165,11 @@
       cardInner.style.transform = 'rotateY(0deg)';
 
       if(isSigned){
-        celebrate(member);
+        confetti.burst(420); // bigger celebration for signed pulls
         showToast(`Congratulations, you got a signed ${member}!`);
+      } else {
+        confetti.burst(160); // smaller burst for regular pulls
+      }!`);
       }
 
       // 4s cooldown
