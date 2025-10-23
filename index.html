@@ -85,7 +85,6 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ---------------- Data ---------------- */
     const MEMBERS = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
     const UNSIGNED = {
       FRANZ: "https://i.postimg.cc/kXkfW9F3/1.png",
@@ -97,46 +96,33 @@
       ISHMI: "https://i.postimg.cc/6Q7ZcG9z/7.png"
     };
     const SIGNED = {
-      // FRANZ SIGNED – paste final URL below
       FRANZ: "",
-      // KAZSH SIGNED – paste final URL below
       KAZSH: "",
-      // NAVI SIGNED – paste final URL below
       NAVI:  "",
-      // INHU SIGNED – paste final URL below
       INHU:  "",
-      // DAMI SIGNED – paste final URL below
       DAMI:  "",
-      // JOSHUA SIGNED – paste final URL below
       JOSHUA:"",
-      // ISHMI SIGNED – paste final URL below
       ISHMI: ""
     };
 
-    /* ---------------- Helpers ---------------- */
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const randInt = n => Math.floor(Math.random()*n);
 
     function pickCard(){
-      // 7 / 1000 chance signed overall
-      const roll = Math.random()*1000; // 0..999.999
-      const isSigned = roll < 7; // ~7/1000
+      const roll = Math.random()*100; // now out of 100 for 8%
+      const isSigned = roll < 8; // 8% chance
       const member = MEMBERS[randInt(MEMBERS.length)];
       const url = (isSigned && SIGNED[member]) ? SIGNED[member] : UNSIGNED[member];
       return {member, isSigned, url};
     }
 
-    /* ---------------- Elements ---------------- */
     const pullBtn = document.getElementById('pullBtn');
     const cardInner = document.getElementById('cardInner');
     const frontImg = document.getElementById('frontImg');
     const label = document.getElementById('label');
     const badge = document.getElementById('signedBadge');
     const toast = document.getElementById('toast');
-
-    /* ---------------- Cooldown (12 hours, persistent) ---------------- */
     let cooling = false;
-    let cooldownTimer = null;
 
     function formatRemaining(total){
       const h = Math.floor(total/3600);
@@ -145,6 +131,7 @@
       return `Cooling ${h}h ${m}m ${s}s`;
     }
 
+    let cooldownTimer = null;
     function setDisabledUntil(endMs){
       if(cooldownTimer) clearInterval(cooldownTimer);
       function tick(){
@@ -171,7 +158,6 @@
       setDisabledUntil(end);
     }
 
-    // restore cooldown from previous session if present
     (function(){
       const stored = Number(localStorage.getItem('enfuzeNext'));
       if(stored && stored > Date.now()){
@@ -180,38 +166,31 @@
       }
     })();
 
-    /* ---------------- Pull / Flip ---------------- */
     pullBtn.addEventListener('click', async () => {
       if(cooling) return;
       cooling = true;
       pullBtn.disabled = true; pullBtn.textContent = 'Processing…';
 
-      // Flip to back first
       cardInner.style.transition = 'transform .35s ease';
       cardInner.style.transform = 'rotateY(180deg)';
       await sleep(350);
 
-      // Pick card & update visuals
       const {member, isSigned, url} = pickCard();
       frontImg.src = url;
       frontImg.alt = `${member} photocard`;
       badge.style.display = isSigned ? 'inline-block' : 'none';
       label.textContent = `${member} - ${isSigned ? 'Signed' : 'Regular'}`;
 
-      // Reveal front
       cardInner.style.transition = 'transform 1.2s cubic-bezier(.2,.7,.2,1)';
       await sleep(40);
       cardInner.style.transform = 'rotateY(0deg)';
 
-      // Confetti every pull; bigger for signed
       confetti.burst(isSigned ? 420 : 160);
       if(isSigned) showToast(`Congratulations, you got a signed ${member}!`);
 
-      // Start 12h cooldown
       startCooldown(43200);
     });
 
-    /* ---------------- Confetti ---------------- */
     const confetti = (function(){
       const cvs = document.getElementById('confetti');
       const ctx = cvs.getContext('2d');
@@ -241,14 +220,12 @@
       return {burst(n){spawn(n); step();}};
     })();
 
-    /* ---------------- Toast ---------------- */
     function showToast(msg){
       toast.textContent = msg;
       toast.classList.add('show');
       setTimeout(()=>toast.classList.remove('show'),2600);
     }
 
-    /* ---------------- Red Glow Background ---------------- */
     (function(){
       const cvs=document.getElementById('bg');
       const ctx=cvs.getContext('2d');
@@ -268,28 +245,6 @@
         requestAnimationFrame(step);
       }
       window.addEventListener('resize',resize);resize();step();
-    })();
-
-    /* ---------------- Smoke Tests (console) ---------------- */
-    window._enfuzeTest = { pickCard, formatRemaining };
-    (function runSmokeTests(){
-      try {
-        // Test 1: Signed odds ~0.7%
-        let signed=0; const N=20000; for(let i=0;i<N;i++){ if(pickCard().isSigned) signed++; }
-        const pct=(signed/N*100);
-        console.log('[TEST] Signed rate ~0.7% (±0.3):', pct.toFixed(2)+'%');
-
-        // Test 2: Label format
-        const sample = pickCard();
-        const labelStr = `${sample.member} - ${sample.isSigned?'Signed':'Regular'}`;
-        console.assert(/^(FRANZ|KAZSH|NAVI|INHU|DAMI|JOSHUA|ISHMI) - (Signed|Regular)$/.test(labelStr), '[TEST] label format ok');
-
-        // Test 3: Cooldown formatter
-        const text = formatRemaining(43200);
-        console.assert(/^Cooling \d+h \d+m \d+s$/.test(text), '[TEST] formatRemaining ok');
-      } catch(e){
-        console.error('[TEST] failed:', e);
-      }
     })();
   </script>
 </body>
