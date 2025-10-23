@@ -4,31 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ENFUZE: PHOTOCARDS</title>
-  <!-- Font: Rubik Glitch -->
   <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
   <style>
-    :root{
+    :root {
       --bg:#070202;
       --red:#ff1a1a;
       --red-dim:#a20000;
-      --card-w:5.5cm; /* updated */
-      --card-h:8.5cm; /* updated */
-      --ui-scale:1.5; /* render ~1.5x on screen without warping */ /* requested physical size */
+      --card-w:5.5cm;
+      --card-h:8.5cm;
+      --ui-scale:1.5;
       --glow:0 0 12px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
     }
     html,body{height:100%;}
-    body{
+    body {
       margin:0; background:radial-gradient(1200px 800px at 50% -10%, #1a0000 0%, #000 70%);
       color:#fbeaea; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
-      display:flex; flex-direction:column; align-items:center; gap:16px; overflow:hidden;
+      display:flex; flex-direction:column; align-items:center; overflow-x:hidden;
     }
-    /* Floating red particles background */
-    #bg{position:fixed; inset:0; z-index:-1; filter:blur(0.2px);}    
+    #bg {position:fixed; inset:0; z-index:-1; filter:blur(0.2px);}    
 
     h1{font-family:'Rubik Glitch', system-ui; letter-spacing:.5px; font-size:clamp(28px,4vw,48px); margin:22px 0 6px; color:var(--red); text-shadow:var(--glow);} 
 
-    .controls{display:flex; align-items:center; gap:12px;}
-    .btn{
+    .controls{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:30px; margin-bottom:40px; z-index:2;}
+    .btn {
       appearance:none; border:none; outline:none; cursor:pointer;
       background:linear-gradient(#d50000,#8c0000);
       color:#fff; font-weight:800; letter-spacing:.5px; padding:10px 18px; border-radius:10px;
@@ -39,57 +37,54 @@
     .btn:active{transform:translateY(1px);} 
     .btn[disabled]{opacity:.6; cursor:not-allowed;}
 
-    .stage{position:relative; width:var(--card-w); height:var(--card-h); margin:22px auto 10px; transform:scale(var(--ui-scale)); transform-origin: top center;}
+    .card-wrapper {display:flex; flex-direction:column; align-items:center; margin-top:40px;}
+
+    .stage{position:relative; width:var(--card-w); height:var(--card-h); transform:scale(var(--ui-scale)); transform-origin: top center; margin-bottom: calc((var(--ui-scale) - 1) * var(--card-h) + 40px);} 
     .glow{position:absolute; inset:-14px; border-radius:22px; box-shadow:0 0 40px rgba(255,0,0,.35), inset 0 0 30px rgba(255,0,0,.06);} 
 
-    /* 3D card */
     .card{width:100%; height:100%; position:relative; perspective:1200px;}
-    .card-inner{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.2s cubic-bezier(.2,.7,.2,1);}
+    .card-inner{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.2s cubic-bezier(.2,.7,.2,1);} 
     .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; overflow:hidden;}
     .face img{width:100%; height:100%; object-fit:cover; display:block;}
-    .back{transform:rotateY(180deg);} /* start on back */
-    .label{margin-top:12px; text-align:center; font-size:14px; opacity:.9}
+    .back{transform:rotateY(180deg);} 
 
-    /* Signed badge overlay */
+    .label{font-size:14px; opacity:.9; text-align:center; margin-top:8px;}
+
     .badge{position:absolute; top:10px; left:10px; background:rgba(255,0,0,.9); color:#fff; font-weight:800; padding:6px 10px; border-radius:999px; box-shadow:var(--glow); letter-spacing:.3px; font-size:12px;}
 
-    /* Toast */
     .toast{position:fixed; top:18px; right:18px; background:rgba(15,2,2,.9); border:1px solid rgba(255,0,0,.35); color:#fff; padding:12px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(-8px); transition:all .35s ease; z-index:30;}
     .toast.show{opacity:1; transform:translateY(0);} 
 
-    /* Confetti canvas */
     #confetti{position:fixed; inset:0; pointer-events:none; z-index:25;}
   </style>
 </head>
 <body>
   <canvas id="bg"></canvas>
-
   <h1>ENFUZE: PHOTOCARDS</h1>
   <div class="controls">
     <button id="pullBtn" class="btn">FUZE</button>
   </div>
-
-  <div class="stage">
-    <div class="glow" aria-hidden="true"></div>
-    <div class="card" aria-live="polite">
-      <div class="card-inner" id="cardInner" style="transform: rotateY(180deg);">
-        <div class="face front" id="frontFace">
-          <span class="badge" id="signedBadge" style="display:none;">SIGNED</span>
-          <img id="frontImg" alt="Photocard front" />
-        </div>
-        <div class="face back">
-          <img id="backImg" alt="Card back" src="https://i.postimg.cc/FzHnCZ1P/8.png" />
+  <div class="card-wrapper">
+    <div class="stage">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="card" aria-live="polite">
+        <div class="card-inner" id="cardInner" style="transform: rotateY(180deg);">
+          <div class="face front" id="frontFace">
+            <span class="badge" id="signedBadge" style="display:none;">SIGNED</span>
+            <img id="frontImg" alt="Photocard front" />
+          </div>
+          <div class="face back">
+            <img id="backImg" alt="Card back" src="https://i.postimg.cc/FzHnCZ1P/8.png" />
+          </div>
         </div>
       </div>
     </div>
+    <div class="label" id="label">—</div>
   </div>
-  <div class="label" id="label">—</div>
-
   <canvas id="confetti"></canvas>
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ---------------- Data ---------------- */
     const MEMBERS = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
     const UNSIGNED = {
       FRANZ: "https://i.postimg.cc/kXkfW9F3/1.png",
@@ -100,47 +95,33 @@
       JOSHUA:"https://i.postimg.cc/9fNpFhMW/6.png",
       ISHMI: "https://i.postimg.cc/6Q7ZcG9z/7.png"
     };
-    // Signed placeholders — replace each value with your signed image URL later
     const SIGNED = {
-      // FRANZ SIGNED – paste final URL below
       FRANZ: "",
-      // KAZSH SIGNED – paste final URL below
       KAZSH: "",
-      // NAVI SIGNED – paste final URL below
-      NAVI: "",
-      // INHU SIGNED – paste final URL below
-      INHU: "",
-      // DAMI SIGNED – paste final URL below
-      DAMI: "",
-      // JOSHUA SIGNED – paste final URL below
-      JOSHUA: "",
-      // ISHMI SIGNED – paste final URL below
+      NAVI:  "",
+      INHU:  "",
+      DAMI:  "",
+      JOSHUA:"",
       ISHMI: ""
     };
 
-    /* ---------------- Helpers ---------------- */
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-    const randInt = n => Math.floor(Math.random()*n); // 0..n-1
+    const randInt = n => Math.floor(Math.random()*n);
 
     function pickCard(){
-      // 7 / 1000 chance signed overall
-      const roll = Math.random()*1000; // 0..999.999
-      const isSigned = roll < 7; // ~7/1000
+      const roll = Math.random()*1000;
+      const isSigned = roll < 7;
       const member = MEMBERS[randInt(MEMBERS.length)];
       const url = (isSigned && SIGNED[member]) ? SIGNED[member] : UNSIGNED[member];
-      const usedPlaceholder = isSigned && !SIGNED[member];
-      return {member, isSigned, url, usedPlaceholder};
+      return {member, isSigned, url};
     }
 
-    /* ---------------- Flip / UI ---------------- */
     const pullBtn = document.getElementById('pullBtn');
     const cardInner = document.getElementById('cardInner');
     const frontImg = document.getElementById('frontImg');
-    const backImg = document.getElementById('backImg');
     const label = document.getElementById('label');
     const badge = document.getElementById('signedBadge');
     const toast = document.getElementById('toast');
-
     let cooling = false;
 
     pullBtn.addEventListener('click', async () => {
@@ -148,31 +129,23 @@
       cooling = true;
       countdown(4);
 
-      // Ensure we start on back, then flip forward to reveal
       cardInner.style.transition = 'transform .35s ease';
       cardInner.style.transform = 'rotateY(180deg)';
       await sleep(350);
 
-      const {member, isSigned, url, usedPlaceholder} = pickCard();
+      const {member, isSigned, url} = pickCard();
       frontImg.src = url;
       frontImg.alt = `${member} photocard`;
       badge.style.display = isSigned ? 'inline-block' : 'none';
-      label.textContent = `${member} — ${isSigned ? 'Signed' : 'Regular'}`;
+      label.textContent = `${member} - ${isSigned ? 'Signed' : 'Regular'}`;
 
-      // Slow reveal
       cardInner.style.transition = 'transform 1.2s cubic-bezier(.2,.7,.2,1)';
       await sleep(40);
       cardInner.style.transform = 'rotateY(0deg)';
 
-      if(isSigned){
-        confetti.burst(420); // bigger celebration for signed pulls
-        showToast(`Congratulations, you got a signed ${member}!`);
-      } else {
-        confetti.burst(160); // smaller burst for regular pulls
-      }!`);
-      }
+      confetti.burst(isSigned ? 420 : 160);
+      if(isSigned) showToast(`Congratulations, you got a signed ${member}!`);
 
-      // 4s cooldown
       await sleep(4000);
       pullBtn.textContent = 'FUZE';
       pullBtn.disabled = false;
@@ -189,86 +162,60 @@
       }, 1000);
     }
 
-    /* ---------------- Confetti ---------------- */
     const confetti = (function(){
       const cvs = document.getElementById('confetti');
       const ctx = cvs.getContext('2d');
-      let W, H, pieces=[], running=false;
-      function resize(){ W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+      let W,H,pieces=[],running=false;
+      function resize(){ W=cvs.width=innerWidth; H=cvs.height=innerHeight; }
       window.addEventListener('resize', resize); resize();
       function spawn(n){
         for(let i=0;i<n;i++){
-          pieces.push({
-            x: Math.random()*W, y: -20 - Math.random()*H*0.3,
-            r: 2 + Math.random()*5,
-            w: 4 + Math.random()*6,
-            h: 8 + Math.random()*12,
-            a: Math.random()*Math.PI,
-            v: 1.2 + Math.random()*2.2,
-            s: (Math.random()<.5?1:-1)*(0.02+Math.random()*0.04)
-          });
+          pieces.push({x:Math.random()*W,y:-20-Math.random()*H*0.3,r:2+Math.random()*5,w:4+Math.random()*6,h:8+Math.random()*12,a:Math.random()*Math.PI,v:1.2+Math.random()*2.2,s:(Math.random()<.5?1:-1)*(0.02+Math.random()*0.04)});
         }
       }
       function step(){
         if(!running && pieces.length===0) return;
-        running = true;
+        running=true;
         ctx.clearRect(0,0,W,H);
         for(let i=pieces.length-1;i>=0;i--){
           const p=pieces[i];
-          p.y += p.v; p.a += p.s; p.x += Math.sin(p.a)*0.6;
-          ctx.save();
-          ctx.translate(p.x,p.y);
-          ctx.rotate(p.a);
-          ctx.fillStyle = `hsl(${Math.floor(0+Math.random()*20)}, 100%, ${50+Math.random()*30}%)`;
+          p.y+=p.v; p.a+=p.s; p.x+=Math.sin(p.a)*0.6;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+          ctx.fillStyle=`hsl(${Math.floor(0+Math.random()*20)},100%,${50+Math.random()*30}%)`;
           ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
           ctx.restore();
           if(p.y>H+20) pieces.splice(i,1);
         }
         if(pieces.length>0) requestAnimationFrame(step); else running=false;
       }
-      return {
-        burst(n){ spawn(n); step(); }
-      }
+      return {burst(n){spawn(n); step();}};
     })();
-
-    function celebrate(member){
-      confetti.burst(240);
-    }
 
     function showToast(msg){
       toast.textContent = msg;
       toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'), 2600);
+      setTimeout(()=>toast.classList.remove('show'),2600);
     }
 
-    /* ---------------- Red Glow Particles BG ---------------- */
     (function(){
-      const cvs = document.getElementById('bg');
-      const ctx = cvs.getContext('2d');
+      const cvs=document.getElementById('bg');
+      const ctx=cvs.getContext('2d');
       let W,H,pts=[];
-      function resize(){ W=cvs.width=innerWidth; H=cvs.height=innerHeight; make(); }
-      function make(){
-        pts = Array.from({length: 140}, ()=>({
-          x: Math.random()*W,
-          y: Math.random()*H,
-          r: Math.random()*1.8 + 0.6,
-          v: Math.random()*0.25 + 0.05,
-          tw: Math.random()*200 + 40
-        }));
-      }
+      function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;make();}
+      function make(){pts=Array.from({length:140},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.6,v:Math.random()*0.25+0.05,tw:Math.random()*200+40}));}
       function step(){
         ctx.clearRect(0,0,W,H);
         for(const p of pts){
-          p.y += p.v; if(p.y>H+10){ p.y=-10; p.x = Math.random()*W; }
-          const glow = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
+          p.y+=p.v;if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}
+          const glow=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
           glow.addColorStop(0,'rgba(255,40,40,.9)');
           glow.addColorStop(1,'rgba(255,0,0,0)');
-          ctx.fillStyle = glow;
-          ctx.beginPath(); ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2); ctx.fill();
+          ctx.fillStyle=glow;
+          ctx.beginPath();ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2);ctx.fill();
         }
         requestAnimationFrame(step);
       }
-      window.addEventListener('resize', resize); resize(); step();
+      window.addEventListener('resize',resize);resize();step();
     })();
   </script>
 </body>
