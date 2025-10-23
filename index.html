@@ -1,228 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ENFUZED: PHOTOCARDS</title>
-<link href="https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&display=swap" rel="stylesheet">
-<style>
-  body{margin:0;font-family:system-ui;background:#0a0000;color:#f5eaea;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;padding:24px;background:radial-gradient(circle at top, #1a0000, #000000 80%);overflow:hidden;}
-  h1{font-family:'Rubik 80s Fade',cursive;font-size:36px;margin-bottom:10px;letter-spacing:1px;color:#ff3b3b;text-shadow:0 0 12px #ff0000;}
-  button{background:#a20000;border:none;color:white;padding:10px 18px;border-radius:8px;font-weight:600;cursor:pointer;transition:opacity 0.3s;}
-  button:hover{background:#cc0000;}
-  button:disabled{opacity:0.5;cursor:not-allowed;}
-  #stage{margin-top:20px;width:300px;height:450px;position:relative;perspective:1000px;}
-  .card{width:100%;height:100%;border-radius:18px;transform-style:preserve-3d;transition:transform .8s;position:relative;box-shadow:0 15px 35px rgba(255,0,0,.3);z-index:2;}
-  .card.flipped{transform:rotateY(180deg);} /* back side visible when flipped */
-  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;overflow:hidden;}
-  /* FRONT is text-only */
-  .front{transform:rotateY(0deg);position:relative;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;}
-  .title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;}
-  .title .member{font-weight:900;font-size:28px;letter-spacing:.5px;color:#ffd6d6;text-shadow:0 0 14px rgba(255,0,0,.6);} 
-  .title .variant{margin-top:6px;font-weight:700;font-size:14px;color:#ff8c8c;letter-spacing:.08em}
-  .back{transform:rotateY(180deg);position:relative;background:linear-gradient(135deg,#330000,#0a0000);display:flex;align-items:center;justify-content:center;}
-  .back .logo{font-size:22px;font-weight:900;color:#ff3b3b;letter-spacing:1.5px;text-shadow:0 0 10px #ff0000;}
-  .badge{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;background:#330000;border:1px solid #ff4d4d;color:#fff;}
-  .badge.signed{background:#4a002f;border-color:#ff6fb0;color:#ffe9f7;box-shadow:0 0 10px #ff0077;}
-  .meta{position:absolute;bottom:12px;left:12px;right:12px;font-size:14px;text-align:center;font-weight:600;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:6px 0;border-radius:10px;color:#fff;}
-  #result{margin-top:20px;text-align:center;color:#f2b6b6;font-size:15px;}
-  canvas#particles,canvas#confetti{position:fixed;inset:0;z-index:0;pointer-events:none;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ENFUZE: PHOTOCARDS</title>
+  <!-- Font: Rubik Glitch -->
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#070202;
+      --red:#ff1a1a;
+      --red-dim:#a20000;
+      --card-w:4.5cm; /* requested physical size */
+      --card-h:8.5cm; /* requested physical size */
+      --glow:0 0 12px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; background:radial-gradient(1200px 800px at 50% -10%, #1a0000 0%, #000 70%);
+      color:#fbeaea; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+      display:flex; flex-direction:column; align-items:center; gap:16px; overflow:hidden;
+    }
+    /* Floating red particles background */
+    #bg{position:fixed; inset:0; z-index:-1; filter:blur(0.2px);}    
+
+    h1{font-family:'Rubik Glitch', system-ui; letter-spacing:.5px; font-size:clamp(28px,4vw,48px); margin:22px 0 6px; color:var(--red); text-shadow:var(--glow);} 
+
+    .controls{display:flex; align-items:center; gap:12px;}
+    .btn{
+      appearance:none; border:none; outline:none; cursor:pointer;
+      background:linear-gradient(#d50000,#8c0000);
+      color:#fff; font-weight:800; letter-spacing:.5px; padding:10px 18px; border-radius:10px;
+      box-shadow:0 6px 20px rgba(255,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.08);
+      transition:transform .07s ease, filter .2s ease;
+    }
+    .btn:hover{filter:brightness(1.1);} 
+    .btn:active{transform:translateY(1px);} 
+    .btn[disabled]{opacity:.6; cursor:not-allowed;}
+
+    .stage{position:relative; width:var(--card-w); height:var(--card-h); margin:22px auto 10px;}
+    .glow{position:absolute; inset:-14px; border-radius:22px; box-shadow:0 0 40px rgba(255,0,0,.35), inset 0 0 30px rgba(255,0,0,.06);} 
+
+    /* 3D card */
+    .card{width:100%; height:100%; position:relative; perspective:1200px;}
+    .card-inner{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.2s cubic-bezier(.2,.7,.2,1);}
+    .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; overflow:hidden;}
+    .face img{width:100%; height:100%; object-fit:cover; display:block;}
+    .back{transform:rotateY(180deg);} /* start on back */
+    .label{margin-top:12px; text-align:center; font-size:14px; opacity:.9}
+
+    /* Signed badge overlay */
+    .badge{position:absolute; top:10px; left:10px; background:rgba(255,0,0,.9); color:#fff; font-weight:800; padding:6px 10px; border-radius:999px; box-shadow:var(--glow); letter-spacing:.3px; font-size:12px;}
+
+    /* Toast */
+    .toast{position:fixed; top:18px; right:18px; background:rgba(15,2,2,.9); border:1px solid rgba(255,0,0,.35); color:#fff; padding:12px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(-8px); transition:all .35s ease; z-index:30;}
+    .toast.show{opacity:1; transform:translateY(0);} 
+
+    /* Confetti canvas */
+    #confetti{position:fixed; inset:0; pointer-events:none; z-index:25;}
+  </style>
 </head>
 <body>
-<h1>ENFUZED: PHOTOCARDS</h1>
-<button id="openBtn">FUZE</button>
-<canvas id="particles"></canvas>
-<canvas id="confetti"></canvas>
-<div id="stage">
-  <div class="card" id="card">
-    <div class="face front">
-      <div id="rarBadge" class="badge">NORMAL</div>
-      <div id="meta" class="meta"></div>
-      <div class="title">
-        <div id="memberName" class="member">—</div>
-        <div id="variant" class="variant">–</div>
+  <canvas id="bg"></canvas>
+
+  <h1>ENFUZE: PHOTOCARDS</h1>
+  <div class="controls">
+    <button id="pullBtn" class="btn">FUZE</button>
+  </div>
+
+  <div class="stage">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="card" aria-live="polite">
+      <div class="card-inner" id="cardInner" style="transform: rotateY(180deg);">
+        <div class="face front" id="frontFace">
+          <span class="badge" id="signedBadge" style="display:none;">SIGNED</span>
+          <img id="frontImg" alt="Photocard front" />
+        </div>
+        <div class="face back">
+          <img id="backImg" alt="Card back" src="https://i.postimg.cc/FzHnCZ1P/8.png" />
+        </div>
       </div>
     </div>
-    <div class="face back">
-      <div class="logo">ENFUZED</div>
-    </div>
   </div>
-</div>
-<div id="result">No pulls yet.</div>
-<script>
-// ------------------------------------
-// Members & Pool (placeholders inserted)
-// ------------------------------------
-const members = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
+  <div class="label" id="label">—</div>
 
-const pool = [
-  { name: "FRANZ — Normal",  img: "https://i.postimg.cc/3xwSRN3V/franz1.jpg",  rarity: "normal", weight: 999 },
-  { name: "FRANZ — Signed",  img: "https://placehold.co/300x450/4a002f/ffffff?text=FRANZ+Signed",  rarity: "signed", weight: 1 },
+  <canvas id="confetti"></canvas>
+  <div class="toast" id="toast"></div>
 
-  { name: "KAZSH — Normal",  img: "https://i.postimg.cc/cCs7bkCq/kazsh1.jpg",  rarity: "normal", weight: 999 },
-  { name: "KAZSH — Signed",  img: "https://placehold.co/300x450/4a002f/ffffff?text=KAZSH+Signed",  rarity: "signed", weight: 1 },
+  <script>
+    /* ---------------- Data ---------------- */
+    const MEMBERS = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
+    const UNSIGNED = {
+      FRANZ: "https://i.postimg.cc/kXkfW9F3/1.png",
+      KAZSH: "https://i.postimg.cc/63mdwLM5/2.png",
+      NAVI:  "https://i.postimg.cc/3JDZ8VMC/3.png",
+      INHU:  "https://i.postimg.cc/Hkd36zRG/4.png",
+      DAMI:  "https://i.postimg.cc/G3DQr6nv/5.png",
+      JOSHUA:"https://i.postimg.cc/9fNpFhMW/6.png",
+      ISHMI: "https://i.postimg.cc/6Q7ZcG9z/7.png"
+    };
+    // Signed placeholders — replace each value with your signed image URL later
+    const SIGNED = {
+      FRANZ: "", KAZSH:"", NAVI:"", INHU:"", DAMI:"", JOSHUA:"", ISHMI: ""
+    };
 
-  { name: "NAVI — Normal",   img: "https://i.postimg.cc/85GL7Xh5/navi1.jpg",   rarity: "normal", weight: 999 },
-  { name: "NAVI — Signed",   img: "https://placehold.co/300x450/4a002f/ffffff?text=NAVI+Signed",   rarity: "signed", weight: 1 },
+    /* ---------------- Helpers ---------------- */
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const randInt = n => Math.floor(Math.random()*n); // 0..n-1
 
-  { name: "INHU — Normal",   img: "https://i.postimg.cc/L65Lg11p/inhu1.jpg",   rarity: "normal", weight: 999 },
-  { name: "INHU — Signed",   img: "https://placehold.co/300x450/4a002f/ffffff?text=INHU+Signed",   rarity: "signed", weight: 1 },
-
-  { name: "DAMI — Normal",   img: "https://i.postimg.cc/J76B8zdd/dami1.jpg",   rarity: "normal", weight: 999 },
-  { name: "DAMI — Signed",   img: "https://placehold.co/300x450/4a002f/ffffff?text=DAMI+Signed",   rarity: "signed", weight: 1 },
-
-  { name: "JOSHUA — Normal", img: "https://placehold.co/300x450/330000/ffffff?text=JOSHUA+Normal", rarity: "normal", weight: 999 },
-  { name: "JOSHUA — Signed", img: "https://placehold.co/300x450/4a002f/ffffff?text=JOSHUA+Signed", rarity: "signed", weight: 1 },
-
-  { name: "ISHMI — Normal",  img: "https://placehold.co/300x450/330000/ffffff?text=ISHMI+Normal",  rarity: "normal", weight: 999 },
-  { name: "ISHMI — Signed",  img: "https://placehold.co/300x450/4a002f/ffffff?text=ISHMI+Signed",  rarity: "signed", weight: 1 }
-];
-
-const card = document.getElementById('card');
-const badge = document.getElementById('rarBadge');
-const meta = document.getElementById('meta');
-const result = document.getElementById('result');
-const openBtn = document.getElementById('openBtn');
-const memberName = document.getElementById('memberName');
-const variant = document.getElementById('variant');
-const confettiCanvas = document.getElementById('confetti');
-const ctxConf = confettiCanvas.getContext('2d');
-let wConf,hConf;function resizeConf(){wConf=confettiCanvas.width=window.innerWidth;hConf=confettiCanvas.height=window.innerHeight;}window.addEventListener('resize',resizeConf);resizeConf();
-
-// ------------------------------------
-// Cooldown with countdown label
-// ------------------------------------
-let canFuze = true;
-openBtn.addEventListener('click', ()=>{ if(canFuze){ openBox(); cooldown(4); } });
-
-function cooldown(seconds){
-  canFuze=false;
-  openBtn.disabled=true;
-  let remaining = seconds;
-  openBtn.textContent = `Wait ${remaining}s`;
-  const countdown = setInterval(()=>{
-    remaining--;
-    if(remaining>0){ openBtn.textContent = `Wait ${remaining}s`; }
-    else {
-      clearInterval(countdown);
-      canFuze=true;
-      openBtn.disabled=false;
-      openBtn.textContent='FUZE';
+    function pickCard(){
+      // 7 / 1000 chance signed overall
+      const roll = Math.random()*1000; // 0..999.999
+      const isSigned = roll < 7; // ~7/1000
+      const member = MEMBERS[randInt(MEMBERS.length)];
+      const url = (isSigned && SIGNED[member]) ? SIGNED[member] : UNSIGNED[member];
+      const usedPlaceholder = isSigned && !SIGNED[member];
+      return {member, isSigned, url, usedPlaceholder};
     }
-  },1000);
-}
 
-// ------------------------------------
-// Random selection: 0.1% per member for Signed
-// ------------------------------------
-function chooseCard(){
-  const m = members[Math.floor(Math.random()*members.length)];
-  const isSigned = Math.random() < 0.001; // 0.1% per member
-  const type = isSigned ? 'Signed' : 'Normal';
-  const picked = pool.find(p=>p.name.startsWith(m+" ") && p.name.includes(type));
-  return { ...picked, isSigned, member:m, type };
-}
+    /* ---------------- Flip / UI ---------------- */
+    const pullBtn = document.getElementById('pullBtn');
+    const cardInner = document.getElementById('cardInner');
+    const frontImg = document.getElementById('frontImg');
+    const backImg = document.getElementById('backImg');
+    const label = document.getElementById('label');
+    const badge = document.getElementById('signedBadge');
+    const toast = document.getElementById('toast');
 
-// ------------------------------------
-// Confetti
-// ------------------------------------
-function confettiBurst(big){
-  const count = big?150:50;
-  const pieces = Array.from({length:count},()=>({
-    x:wConf/2+Math.random()*200-100,
-    y:hConf/2,
-    dx:(Math.random()-0.5)*8,
-    dy:(Math.random()-0.5)*8,
-    r:big?4+Math.random()*4:2+Math.random()*2,
-    a:1
-  }));
-  let t=0;const id=setInterval(()=>{
-    t++;ctxConf.clearRect(0,0,wConf,hConf);
-    pieces.forEach(p=>{p.x+=p.dx;p.y+=p.dy;p.dy+=0.15;p.a-=0.01;ctxConf.globalAlpha=Math.max(p.a,0);ctxConf.fillStyle='rgba(255,'+(60+Math.random()*60)+','+(60+Math.random()*60)+',1)';ctxConf.beginPath();ctxConf.arc(p.x,p.y,p.r,0,Math.PI*2);ctxConf.fill();});
-    if(t>150){clearInterval(id);ctxConf.clearRect(0,0,wConf,hConf);} 
-  },16);
-}
+    let cooling = false;
 
-// ------------------------------------
-// Open flow: flip BACK → set content → flip FRONT
-// ------------------------------------
-function openBox(){
-  card.classList.add('flipped');
-  const pick = chooseCard();
-  setTimeout(()=>{
-    badge.textContent = pick.rarity.toUpperCase();
-    badge.className = 'badge' + (pick.isSigned ? ' signed' : '');
-    meta.textContent = pick.name;
-    memberName.textContent = pick.member;
-    variant.textContent = pick.type.toUpperCase();
+    pullBtn.addEventListener('click', async () => {
+      if(cooling) return;
+      cooling = true;
+      countdown(4);
 
-    card.classList.remove('flipped');
+      // Ensure we start on back, then flip forward to reveal
+      cardInner.style.transition = 'transform .35s ease';
+      cardInner.style.transform = 'rotateY(180deg)';
+      await sleep(350);
 
-    if(pick.isSigned){
-      result.innerHTML = `🎉 Congratulations! You received a <b>signed ${pick.name}</b>.<br>Screenshot the photocard to redeem your reward with <a href='https://instagram.com/enfuzed' target='_blank'>@enfuzed</a> on Instagram!`;
-      confettiBurst(true);
-    } else {
-      result.textContent = `${pick.name} — Common`;
-      confettiBurst(false);
+      const {member, isSigned, url, usedPlaceholder} = pickCard();
+      frontImg.src = url;
+      frontImg.alt = `${member} photocard`;
+      badge.style.display = isSigned ? 'inline-block' : 'none';
+      label.textContent = `${member} — ${isSigned ? 'Signed' : 'Regular'}`;
+
+      // Slow reveal
+      cardInner.style.transition = 'transform 1.2s cubic-bezier(.2,.7,.2,1)';
+      await sleep(40);
+      cardInner.style.transform = 'rotateY(0deg)';
+
+      if(isSigned){
+        celebrate(member);
+        showToast(`Congratulations, you got a signed ${member}!`);
+      }
+
+      // 4s cooldown
+      await sleep(4000);
+      pullBtn.textContent = 'FUZE';
+      pullBtn.disabled = false;
+      cooling = false;
+    });
+
+    function countdown(sec){
+      pullBtn.disabled = true;
+      let t = sec;
+      pullBtn.textContent = `Cooling ${t}s`;
+      const id = setInterval(()=>{
+        t--; pullBtn.textContent = t>0?`Cooling ${t}s`:'FUZE';
+        if(t<=0){ clearInterval(id); }
+      }, 1000);
     }
-  }, 800);
-}
 
-// ------------------------------------
-// Red Spark / Particle Animation
-// ------------------------------------
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let w,h,particles;
-function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
-window.addEventListener('resize',resize);resize();
+    /* ---------------- Confetti ---------------- */
+    const confetti = (function(){
+      const cvs = document.getElementById('confetti');
+      const ctx = cvs.getContext('2d');
+      let W, H, pieces=[], running=false;
+      function resize(){ W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+      window.addEventListener('resize', resize); resize();
+      function spawn(n){
+        for(let i=0;i<n;i++){
+          pieces.push({
+            x: Math.random()*W, y: -20 - Math.random()*H*0.3,
+            r: 2 + Math.random()*5,
+            w: 4 + Math.random()*6,
+            h: 8 + Math.random()*12,
+            a: Math.random()*Math.PI,
+            v: 1.2 + Math.random()*2.2,
+            s: (Math.random()<.5?1:-1)*(0.02+Math.random()*0.04)
+          });
+        }
+      }
+      function step(){
+        if(!running && pieces.length===0) return;
+        running = true;
+        ctx.clearRect(0,0,W,H);
+        for(let i=pieces.length-1;i>=0;i--){
+          const p=pieces[i];
+          p.y += p.v; p.a += p.s; p.x += Math.sin(p.a)*0.6;
+          ctx.save();
+          ctx.translate(p.x,p.y);
+          ctx.rotate(p.a);
+          ctx.fillStyle = `hsl(${Math.floor(0+Math.random()*20)}, 100%, ${50+Math.random()*30}%)`;
+          ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+          ctx.restore();
+          if(p.y>H+20) pieces.splice(i,1);
+        }
+        if(pieces.length>0) requestAnimationFrame(step); else running=false;
+      }
+      return {
+        burst(n){ spawn(n); step(); }
+      }
+    })();
 
-function initParticles(){
-  particles = Array.from({length:80},()=>({
-    x:Math.random()*w,
-    y:Math.random()*h,
-    r:Math.random()*2+1,
-    dx:(Math.random()-0.5)*0.8,
-    dy:(Math.random()-0.5)*0.8,
-    life:Math.random()*100+100
-  }));
-}
-initParticles();
+    function celebrate(member){
+      confetti.burst(240);
+    }
 
-function draw(){
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle='rgba(255,60,60,0.7)';
-  particles.forEach(p=>{
-    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
-    p.x+=p.dx;p.y+=p.dy;p.life-=1;
-    if(p.x<0||p.x>w) p.dx*=-1;
-    if(p.y<0||p.y>h) p.dy*=-1;
-    if(p.life<0){p.x=Math.random()*w;p.y=Math.random()*h;p.life=Math.random()*100+100;}
-  });
-  requestAnimationFrame(draw);
-}
-draw();
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), 2600);
+    }
 
-// ------------------------------
-// Minimal console test cases
-// ------------------------------
-(function runTests(){
-  console.log('%cRunning basic tests…','color:#ff8080');
-  console.assert(pool.length === members.length * 2, `Expected pool length ${members.length*2}, got ${pool.length}`);
-  const normalsOk = pool.filter(p=>p.rarity==='normal').every(p=>p.weight===999);
-  const signedOk  = pool.filter(p=>p.rarity==='signed').every(p=>p.weight===1);
-  console.assert(normalsOk, 'All normal cards should have weight 999');
-  console.assert(signedOk,  'All signed cards should have weight 1');
-  let signed=0, trials=10000; for(let i=0;i<trials;i++){ if(chooseCard().isSigned) signed++; }
-  const rate = signed/trials; console.assert(rate>0.004 && rate<0.012, `Signed rate ~0.007 expected, got ${rate}`);
-  cooldown(1);
-  console.assert(openBtn.disabled === true && /Wait\s*1s/.test(openBtn.textContent), 'Cooldown should disable button and show Wait 1s');
-  setTimeout(()=>{
-    console.assert(openBtn.disabled === false && openBtn.textContent==='FUZE', 'Cooldown should finish and re-enable button with FUZE label');
-    console.log('%cTests completed.','color:#80ffb3');
-  },1200);
-})();
-</script>
+    /* ---------------- Red Glow Particles BG ---------------- */
+    (function(){
+      const cvs = document.getElementById('bg');
+      const ctx = cvs.getContext('2d');
+      let W,H,pts=[];
+      function resize(){ W=cvs.width=innerWidth; H=cvs.height=innerHeight; make(); }
+      function make(){
+        pts = Array.from({length: 140}, ()=>({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          r: Math.random()*1.8 + 0.6,
+          v: Math.random()*0.25 + 0.05,
+          tw: Math.random()*200 + 40
+        }));
+      }
+      function step(){
+        ctx.clearRect(0,0,W,H);
+        for(const p of pts){
+          p.y += p.v; if(p.y>H+10){ p.y=-10; p.x = Math.random()*W; }
+          const glow = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
+          glow.addColorStop(0,'rgba(255,40,40,.9)');
+          glow.addColorStop(1,'rgba(255,0,0,0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2); ctx.fill();
+        }
+        requestAnimationFrame(step);
+      }
+      window.addEventListener('resize', resize); resize(); step();
+    })();
+  </script>
 </body>
 </html>
