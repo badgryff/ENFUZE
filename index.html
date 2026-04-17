@@ -17,60 +17,148 @@
     }
     html,body{height:100%;}
     body {
-      margin:0; background:radial-gradient(1200px 800px at 50% -10%, #1a0000 0%, #000 70%);
-      color:#fbeaea; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
-      display:flex; flex-direction:column; align-items:center; overflow-x:hidden;
+      margin:0;
+      background:radial-gradient(1200px 800px at 50% -10%, #1a0000 0%, #000 70%);
+      color:#fbeaea;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      overflow-x:hidden;
     }
-    #bg {position:fixed; inset:0; z-index:-1; filter:blur(0.2px);}    
+    #bg {
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      filter:blur(0.2px);
+    }
 
-    h1{font-family:'Rubik Glitch', system-ui; letter-spacing:.5px; font-size:clamp(28px,4vw,48px); margin:22px 0 6px; color:var(--red); text-shadow:var(--glow);} 
+    h1 {
+      font-family:'Rubik Glitch', system-ui;
+      letter-spacing:.5px;
+      font-size:clamp(28px,4vw,48px);
+      margin:22px 0 6px;
+      color:var(--red);
+      text-shadow:var(--glow);
+    }
 
-    .controls{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:30px; margin-bottom:80px; z-index:2;}
+    .controls {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      margin-top:30px;
+      margin-bottom:80px;
+      z-index:2;
+    }
+
     .btn {
-      appearance:none; border:none; outline:none; cursor:pointer;
+      appearance:none;
+      border:none;
+      outline:none;
+      cursor:pointer;
       background:linear-gradient(#d50000,#8c0000);
-      color:#fff; font-weight:800; letter-spacing:.5px; padding:10px 18px; border-radius:10px;
+      color:#fff;
+      font-weight:800;
+      letter-spacing:.5px;
+      padding:10px 18px;
+      border-radius:10px;
       box-shadow:0 6px 20px rgba(255,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.08);
       transition:transform .07s ease, filter .2s ease;
     }
-    .btn:hover{filter:brightness(1.1);} 
-    .btn:active{transform:translateY(1px);} 
-    .btn[disabled]{opacity:.6; cursor:not-allowed;}
 
-    .card-wrapper {display:flex; flex-direction:column; align-items:center; margin-top:20px;}
+    .btn:hover { filter:brightness(1.1); }
+    .btn:active { transform:translateY(1px); }
+    .btn[disabled] {
+      opacity:.6;
+      cursor:not-allowed;
+    }
 
-    .stage{position:relative; width:var(--card-w); height:var(--card-h); transform:scale(var(--ui-scale)); transform-origin: top center; margin-bottom: calc((var(--ui-scale) - 1) * var(--card-h) + 40px);} 
-    .glow{position:absolute; inset:-14px; border-radius:22px; box-shadow:0 0 40px rgba(255,0,0,.35), inset 0 0 30px rgba(255,0,0,.06);} 
+    .card-wrapper {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      margin-top:20px;
+    }
 
-    .card{width:100%; height:100%; position:relative; perspective:1200px;}
-    .card-inner{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.2s cubic-bezier(.2,.7,.2,1);} 
-    .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:18px; overflow:hidden;}
-    .face img{width:100%; height:100%; object-fit:cover; display:block;}
-    .back{transform:rotateY(180deg);} 
+    .stage {
+      position:relative;
+      width:var(--card-w);
+      height:var(--card-h);
+      transform:scale(var(--ui-scale));
+      transform-origin: top center;
+      margin-bottom: calc((var(--ui-scale) - 1) * var(--card-h) + 40px);
+    }
 
-    .label{font-size:14px; opacity:.9; text-align:center; margin-top:8px;}
+    .glow {
+      position:absolute;
+      inset:-14px;
+      border-radius:22px;
+      box-shadow:0 0 40px rgba(255,0,0,.35), inset 0 0 30px rgba(255,0,0,.06);
+    }
 
-    .badge{position:absolute; top:10px; left:10px; background:rgba(255,0,0,.9); color:#fff; font-weight:800; padding:6px 10px; border-radius:999px; box-shadow:var(--glow); letter-spacing:.3px; font-size:12px;}
+    .card {
+      width:100%;
+      height:100%;
+      position:relative;
+      perspective:1200px;
+    }
 
-    .toast{position:fixed; top:18px; right:18px; background:rgba(15,2,2,.9); border:1px solid rgba(255,0,0,.35); color:#fff; padding:12px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(-8px); transition:all .35s ease; z-index:30;}
-    .toast.show{opacity:1; transform:translateY(0);} 
+    .card-inner {
+      position:absolute;
+      inset:0;
+      transform-style:preserve-3d;
+      transition:transform 1.2s cubic-bezier(.2,.7,.2,1);
+    }
 
-    #confetti{position:fixed; inset:0; pointer-events:none; z-index:25;}
+    .face {
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      border-radius:18px;
+      overflow:hidden;
+    }
+
+    .face img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .back {
+      transform:rotateY(180deg);
+    }
+
+    .label {
+      font-size:14px;
+      opacity:.9;
+      text-align:center;
+      margin-top:8px;
+    }
+
+    #confetti {
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:25;
+    }
   </style>
 </head>
 <body>
   <canvas id="bg"></canvas>
   <h1>ENFUZE: PHOTOCARDS</h1>
+
   <div class="controls">
     <button id="pullBtn" class="btn">FUZE</button>
   </div>
+
   <div class="card-wrapper">
     <div class="stage">
       <div class="glow" aria-hidden="true"></div>
       <div class="card" aria-live="polite">
         <div class="card-inner" id="cardInner" style="transform: rotateY(180deg);">
           <div class="face front" id="frontFace">
-            <span class="badge" id="signedBadge" style="display:none;">SIGNED</span>
             <img id="frontImg" alt="Photocard front" />
           </div>
           <div class="face back">
@@ -81,12 +169,12 @@
     </div>
     <div class="label" id="label">—</div>
   </div>
+
   <canvas id="confetti"></canvas>
-  <div class="toast" id="toast"></div>
 
   <script>
     const MEMBERS = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
-    const UNSIGNED = {
+    const CARDS = {
       FRANZ: "https://i.postimg.cc/kXkfW9F3/1.png",
       KAZSH: "https://i.postimg.cc/63mdwLM5/2.png",
       NAVI:  "https://i.postimg.cc/3JDZ8VMC/3.png",
@@ -95,48 +183,37 @@
       JOSHUA:"https://i.postimg.cc/9fNpFhMW/6.png",
       ISHMI: "https://i.postimg.cc/6Q7ZcG9z/7.png"
     };
-    const SIGNED = {
-      FRANZ: "",
-      KAZSH: "",
-      NAVI:  "",
-      INHU:  "",
-      DAMI:  "",
-      JOSHUA:"",
-      ISHMI: ""
-    };
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-    const randInt = n => Math.floor(Math.random()*n);
+    const randInt = n => Math.floor(Math.random() * n);
 
-    function pickCard(){
-      const roll = Math.random()*100; // now out of 100 for 8%
-      const isSigned = roll < 8; // 8% chance
+    function pickCard() {
       const member = MEMBERS[randInt(MEMBERS.length)];
-      const url = (isSigned && SIGNED[member]) ? SIGNED[member] : UNSIGNED[member];
-      return {member, isSigned, url};
+      return { member, url: CARDS[member] };
     }
 
     const pullBtn = document.getElementById('pullBtn');
     const cardInner = document.getElementById('cardInner');
     const frontImg = document.getElementById('frontImg');
     const label = document.getElementById('label');
-    const badge = document.getElementById('signedBadge');
-    const toast = document.getElementById('toast');
-    let cooling = false;
 
-    function formatRemaining(total){
-      const h = Math.floor(total/3600);
-      const m = Math.floor((total%3600)/60);
-      const s = total%60;
+    let cooling = false;
+    let cooldownTimer = null;
+
+    function formatRemaining(total) {
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
       return `Cooling ${h}h ${m}m ${s}s`;
     }
 
-    let cooldownTimer = null;
-    function setDisabledUntil(endMs){
-      if(cooldownTimer) clearInterval(cooldownTimer);
-      function tick(){
-        const remaining = Math.max(0, Math.floor((endMs - Date.now())/1000));
-        if(remaining <= 0){
+    function setDisabledUntil(endMs) {
+      if (cooldownTimer) clearInterval(cooldownTimer);
+
+      function tick() {
+        const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
+
+        if (remaining <= 0) {
           pullBtn.disabled = false;
           pullBtn.textContent = 'FUZE';
           cooling = false;
@@ -145,106 +222,162 @@
           cooldownTimer = null;
           return;
         }
+
         pullBtn.disabled = true;
         pullBtn.textContent = formatRemaining(remaining);
       }
+
       tick();
       cooldownTimer = setInterval(tick, 1000);
     }
 
-    function startCooldown(seconds){
-      const end = Date.now() + seconds*1000;
+    function startCooldown(seconds) {
+      const end = Date.now() + seconds * 1000;
       localStorage.setItem('enfuzeNext', String(end));
       setDisabledUntil(end);
     }
 
-    (function(){
+    (function () {
       const stored = Number(localStorage.getItem('enfuzeNext'));
-      if(stored && stored > Date.now()){
+      if (stored && stored > Date.now()) {
         setDisabledUntil(stored);
         cooling = true;
       }
     })();
 
     pullBtn.addEventListener('click', async () => {
-      if(cooling) return;
+      if (cooling) return;
+
       cooling = true;
-      pullBtn.disabled = true; pullBtn.textContent = 'Processing…';
+      pullBtn.disabled = true;
+      pullBtn.textContent = 'Processing…';
 
       cardInner.style.transition = 'transform .35s ease';
       cardInner.style.transform = 'rotateY(180deg)';
       await sleep(350);
 
-      const {member, isSigned, url} = pickCard();
+      const { member, url } = pickCard();
       frontImg.src = url;
       frontImg.alt = `${member} photocard`;
-      badge.style.display = isSigned ? 'inline-block' : 'none';
-      label.textContent = `${member} - ${isSigned ? 'Signed' : 'Regular'}`;
+      label.textContent = `${member}`;
 
       cardInner.style.transition = 'transform 1.2s cubic-bezier(.2,.7,.2,1)';
       await sleep(40);
       cardInner.style.transform = 'rotateY(0deg)';
 
-      confetti.burst(isSigned ? 420 : 160);
-      if(isSigned) showToast(`Congratulations, you got a signed ${member}!`);
-
+      confetti.burst(160);
       startCooldown(43200);
     });
 
-    const confetti = (function(){
+    const confetti = (function () {
       const cvs = document.getElementById('confetti');
       const ctx = cvs.getContext('2d');
-      let W,H,pieces=[],running=false;
-      function resize(){ W=cvs.width=innerWidth; H=cvs.height=innerHeight; }
-      window.addEventListener('resize', resize); resize();
-      function spawn(n){
-        for(let i=0;i<n;i++){
-          pieces.push({x:Math.random()*W,y:-20-Math.random()*H*0.3,r:2+Math.random()*5,w:4+Math.random()*6,h:8+Math.random()*12,a:Math.random()*Math.PI,v:1.2+Math.random()*2.2,s:(Math.random()<.5?1:-1)*(0.02+Math.random()*0.04)});
+      let W, H, pieces = [], running = false;
+
+      function resize() {
+        W = cvs.width = innerWidth;
+        H = cvs.height = innerHeight;
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+
+      function spawn(n) {
+        for (let i = 0; i < n; i++) {
+          pieces.push({
+            x: Math.random() * W,
+            y: -20 - Math.random() * H * 0.3,
+            r: 2 + Math.random() * 5,
+            w: 4 + Math.random() * 6,
+            h: 8 + Math.random() * 12,
+            a: Math.random() * Math.PI,
+            v: 1.2 + Math.random() * 2.2,
+            s: (Math.random() < .5 ? 1 : -1) * (0.02 + Math.random() * 0.04)
+          });
         }
       }
-      function step(){
-        if(!running && pieces.length===0) return;
-        running=true;
-        ctx.clearRect(0,0,W,H);
-        for(let i=pieces.length-1;i>=0;i--){
-          const p=pieces[i];
-          p.y+=p.v; p.a+=p.s; p.x+=Math.sin(p.a)*0.6;
-          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
-          ctx.fillStyle=`hsl(${Math.floor(0+Math.random()*20)},100%,${50+Math.random()*30}%)`;
-          ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+
+      function step() {
+        if (!running && pieces.length === 0) return;
+        running = true;
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = pieces.length - 1; i >= 0; i--) {
+          const p = pieces[i];
+          p.y += p.v;
+          p.a += p.s;
+          p.x += Math.sin(p.a) * 0.6;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.a);
+          ctx.fillStyle = `hsl(${Math.floor(0 + Math.random() * 20)},100%,${50 + Math.random() * 30}%)`;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
           ctx.restore();
-          if(p.y>H+20) pieces.splice(i,1);
+
+          if (p.y > H + 20) pieces.splice(i, 1);
         }
-        if(pieces.length>0) requestAnimationFrame(step); else running=false;
+
+        if (pieces.length > 0) {
+          requestAnimationFrame(step);
+        } else {
+          running = false;
+        }
       }
-      return {burst(n){spawn(n); step();}};
+
+      return {
+        burst(n) {
+          spawn(n);
+          step();
+        }
+      };
     })();
 
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'),2600);
-    }
+    (function () {
+      const cvs = document.getElementById('bg');
+      const ctx = cvs.getContext('2d');
+      let W, H, pts = [];
 
-    (function(){
-      const cvs=document.getElementById('bg');
-      const ctx=cvs.getContext('2d');
-      let W,H,pts=[];
-      function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;make();}
-      function make(){pts=Array.from({length:140},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.6,v:Math.random()*0.25+0.05,tw:Math.random()*200+40}));}
-      function step(){
-        ctx.clearRect(0,0,W,H);
-        for(const p of pts){
-          p.y+=p.v;if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}
-          const glow=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
-          glow.addColorStop(0,'rgba(255,40,40,.9)');
-          glow.addColorStop(1,'rgba(255,0,0,0)');
-          ctx.fillStyle=glow;
-          ctx.beginPath();ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2);ctx.fill();
+      function resize() {
+        W = cvs.width = innerWidth;
+        H = cvs.height = innerHeight;
+        make();
+      }
+
+      function make() {
+        pts = Array.from({ length: 140 }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.8 + 0.6,
+          v: Math.random() * 0.25 + 0.05
+        }));
+      }
+
+      function step() {
+        ctx.clearRect(0, 0, W, H);
+
+        for (const p of pts) {
+          p.y += p.v;
+          if (p.y > H + 10) {
+            p.y = -10;
+            p.x = Math.random() * W;
+          }
+
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+          glow.addColorStop(0, 'rgba(255,40,40,.9)');
+          glow.addColorStop(1, 'rgba(255,0,0,0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+          ctx.fill();
         }
+
         requestAnimationFrame(step);
       }
-      window.addEventListener('resize',resize);resize();step();
+
+      window.addEventListener('resize', resize);
+      resize();
+      step();
     })();
   </script>
 </body>
