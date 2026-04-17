@@ -13,7 +13,7 @@
       --card-w:5.5cm;
       --card-h:8.5cm;
       --ui-scale:1.5;
-      --glow:0 0 12px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
+      --glow:0 0 6px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
     }
     html,body{height:100%;}
     body {
@@ -135,6 +135,20 @@
       opacity:.9;
       text-align:center;
       margin-top:8px;
+      line-height:1.5;
+    }
+
+    .label strong {
+      display:block;
+      font-size:15px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+
+    .label .code {
+      display:block;
+      font-size:13px;
+      opacity:.88;
     }
 
     #confetti {
@@ -173,15 +187,26 @@
   <canvas id="confetti"></canvas>
 
   <script>
-    const MEMBERS = ["FRANZ","KAZSH","NAVI","INHU","DAMI","JOSHUA","ISHMI"];
+    const MEMBERS = ["FHEY","KAZSH","NAVI","(BEOM/INHU)","DAMI","ASH","ISHMI"];
+
     const CARDS = {
-      FRANZ: "https://i.postimg.cc/kXkfW9F3/1.png",
+      FHEY: "https://i.postimg.cc/kXkfW9F3/1.png",
       KAZSH: "https://i.postimg.cc/63mdwLM5/2.png",
-      NAVI:  "https://i.postimg.cc/3JDZ8VMC/3.png",
-      INHU:  "https://i.postimg.cc/Hkd36zRG/4.png",
-      DAMI:  "https://i.postimg.cc/G3DQr6nv/5.png",
-      JOSHUA:"https://i.postimg.cc/9fNpFhMW/6.png",
+      NAVI: "https://i.postimg.cc/3JDZ8VMC/3.png",
+      "(BEOM/INHU)": "https://i.postimg.cc/Hkd36zRG/4.png",
+      DAMI: "https://i.postimg.cc/G3DQr6nv/5.png",
+      ASH: "https://i.postimg.cc/9fNpFhMW/6.png",
       ISHMI: "https://i.postimg.cc/6Q7ZcG9z/7.png"
+    };
+
+    const CODES = {
+      FHEY: "#ENF0406",
+      KAZSH: "#ENF0301",
+      NAVI: "#ENF0923",
+      "(BEOM/INHU)": "#ENF1110",
+      DAMI: "#ENF0601",
+      ASH: "#ENF0817",
+      ISHMI: "#ENF0316"
     };
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -189,7 +214,7 @@
 
     function pickCard() {
       const member = MEMBERS[randInt(MEMBERS.length)];
-      return { member, url: CARDS[member] };
+      return { member, url: CARDS[member], code: CODES[member] };
     }
 
     const pullBtn = document.getElementById('pullBtn');
@@ -256,10 +281,10 @@
       cardInner.style.transform = 'rotateY(180deg)';
       await sleep(350);
 
-      const { member, url } = pickCard();
+      const { member, url, code } = pickCard();
       frontImg.src = url;
       frontImg.alt = `${member} photocard`;
-      label.textContent = `${member}`;
+      label.innerHTML = `<strong>${member}</strong><span class="code">${code}</span>`;
 
       cardInner.style.transition = 'transform 1.2s cubic-bezier(.2,.7,.2,1)';
       await sleep(40);
