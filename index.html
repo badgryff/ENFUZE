@@ -13,7 +13,7 @@
       --card-w:5.5cm;
       --card-h:8.5cm;
       --ui-scale:1.5;
-      --glow:0 0 6px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
+      --glow:0 0 12px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.4);
     }
     html,body{height:100%;}
     body {
@@ -151,6 +151,16 @@
       opacity:.88;
     }
 
+    .footer-note {
+      margin-top:18px;
+      margin-bottom:20px;
+      font-size:10px;
+      color:var(--red);
+      font-style:italic;
+      opacity:.9;
+      text-align:center;
+    }
+
     #confetti {
       position:fixed;
       inset:0;
@@ -182,6 +192,7 @@
       </div>
     </div>
     <div class="label" id="label">—</div>
+    <div class="footer-note">ENHYPEN is seven! ♥︎</div>
   </div>
 
   <canvas id="confetti"></canvas>
@@ -291,7 +302,7 @@
       cardInner.style.transform = 'rotateY(0deg)';
 
       confetti.burst(160);
-      startCooldown(43200);
+      startCooldown(25200);
     });
 
     const confetti = (function () {
